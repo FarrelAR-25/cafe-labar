@@ -1,41 +1,56 @@
 'use client';
 
 import Header from '../components/Header';
+import { motion } from 'framer-motion';
 
 export default function ContactPage() {
   return (
-    <div className="relative font-inter min-h-screen text-white">
-      {/* Background kopi.jpg dengan overlay gelap */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat z-0"
-        style={{ backgroundImage: "url('/kopi.jpg')" }}
+    <div
+      className="min-h-screen font-inter text-white bg-cover bg-center relative"
+      style={{
+        backgroundImage: "linear-gradient(rgba(255, 153, 0, 0.4), rgba(0, 0, 0, 0.8)), url('/kopi.jpg')",
+        backgroundAttachment: 'fixed',
+      }}
+    >
+      <Header />
+
+      {/* Content with animation */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+        className="bg-white/70 backdrop-blur-md text-black py-24 px-6 md:px-20"
       >
-        <div className="absolute inset-0 bg-opacity-60 backdrop-blur-sm" />
-      </div>
-
-      {/* Konten utama */}
-      <div className="relative z-10">
-        <Header />
-
-        {/* Contact Section */}
-        <section className="pt-28 pb-16 px-6 md:px-20">
-          <h1 className="text-black text-3xl md:text-4xl font-bold text-center mb-8">
-            Kontak & Lokasi
+        {/* Section: Contact Info */}
+        <motion.section
+          initial={{ opacity: 0, x: -40 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="mb-16"
+        >
+          <h1 className="text-3xl md:text-4xl font-extrabold text-center text-[#5a3b1d] mb-8">
+            ☕ Kontak & Lokasi
           </h1>
-
-          <div className="flex flex-col md:flex-row gap-8 justify-between">
-            {/* Informasi Kontak */}
+          <div className="flex flex-col md:flex-row justify-between gap-8">
+            {/* Kontak Info */}
             <div className="md:w-1/2">
-              <h2 className="text-black text-2xl font-semibold mb-4">Hubungi Kami</h2>
-              <p className="text-black mb-2">📍 Alamat: Jl. Kopi No.123, Depok, Indonesia</p>
-              <p className="text-black mb-2">📞 Telepon: +62 812 3456 7890</p>
-              <p className="text-black mb-2">📧 Email: labarcoffee@example.com</p>
-              <p className="text-black mb-2">⏰ Jam Operasional: 08.00 – 22.00 WIB</p>
+              <h2 className="text-2xl font-semibold mb-4">Hubungi Kami</h2>
+              <p className="mb-2">📍 Jl. Kopi No.123, Depok, Indonesia</p>
+              <p className="mb-2">📞 +62 812 3456 7890</p>
+              <p className="mb-2">📧 labarcoffee@example.com</p>
+              <p className="mb-2">⏰ 08.00 – 22.00 WIB</p>
             </div>
 
-            {/* Google Maps */}
-            <div className="md:w-1/2">
-              <h2 className="text-black text-2xl font-semibold mb-4">Lokasi Kami</h2>
+            {/* Google Map */}
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="md:w-1/2"
+            >
+              <h2 className="text-2xl font-semibold mb-4">Lokasi Kami</h2>
               <div className="rounded-xl overflow-hidden shadow-md w-full h-[300px]">
                 <iframe
                   title="Google Maps Labar Coffee"
@@ -46,42 +61,55 @@ export default function ContactPage() {
                   loading="lazy"
                 ></iframe>
               </div>
-            </div>
+            </motion.div>
           </div>
-        </section>
+        </motion.section>
 
-        {/* Ulasan Pelanggan */}
-        <section className="py-12 px-6 md:px-20">
-          <h2 className="text-black text-2xl md:text-3xl font-bold text-center mb-8">
-            Apa Kata Pelanggan Kami?
+        {/* Section: Testimoni */}
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+        >
+          <h2 className="text-2xl md:text-3xl font-bold text-center text-[#5a3b1d] mb-8">
+            🌟 Apa Kata Pelanggan Kami?
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Testimoni 1 */}
-            <div className="bg-white bg-opacity-90 text-gray-900 p-6 rounded-xl shadow-md">
-              <p className="text-sm italic mb-4">
-                "Tempatnya cozy banget, cocok buat kerja atau santai bareng teman. Mie gobarnya juga juara!"
-              </p>
-              <div className="font-semibold">– Azmi, Mahasiswa</div>
-            </div>
-
-            {/* Testimoni 2 */}
-            <div className="bg-white bg-opacity-90 text-gray-900 p-6 rounded-xl shadow-md">
-              <p className="text-sm italic mb-4">
-                "Suka banget sama Peach Tea-nya, seger dan pas manisnya. Recommended buat nongkrong sore."
-              </p>
-              <div className="font-semibold">– Farrel, Algojo</div>
-            </div>
-
-            {/* Testimoni 3 */}
-            <div className="bg-white bg-opacity-90 text-gray-900 p-6 rounded-xl shadow-md">
-              <p className="text-sm italic mb-4">
-                "Kopi di Labar beda dari yang lain, creamy tapi tetap strong. Pelayanannya juga ramah banget."
-              </p>
-              <div className="font-semibold">– NoName, PKI</div>
-            </div>
+            {[
+              {
+                name: 'Azmi, Mahasiswa',
+                quote:
+                  'Tempatnya cozy banget, cocok buat kerja atau santai bareng teman. Mie gobarnya juga juara!',
+              },
+              {
+                name: 'Farrel, Algojo',
+                quote:
+                  'Suka banget sama Peach Tea-nya, seger dan pas manisnya. Recommended buat nongkrong sore.',
+              },
+              {
+                name: 'NoName, PKI',
+                quote:
+                  'Kopi di Labar beda dari yang lain, creamy tapi tetap strong. Pelayanannya juga ramah banget.',
+              },
+            ].map((t, idx) => (
+              <motion.div
+                key={idx}
+                whileHover={{ scale: 1.03 }}
+                className="bg-white bg-opacity-90 text-gray-900 p-6 rounded-xl shadow-md hover:shadow-xl transition"
+              >
+                <p className="text-sm italic mb-4">"{t.quote}"</p>
+                <div className="font-semibold">– {t.name}</div>
+              </motion.div>
+            ))}
           </div>
-        </section>
-      </div>
+        </motion.section>
+      </motion.div>
+
+      {/* Footer */}
+      <footer className="bg-[#997950] text-white text-center py-3 px-6 text-sm">
+        Present By JustAR
+      </footer>
     </div>
   );
 }

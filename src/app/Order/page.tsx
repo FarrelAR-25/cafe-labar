@@ -1,19 +1,33 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { db } from '@/../firebase';
+import { useRouter } from 'next/navigation';
 import {
   collection,
-  getDocs,
   addDoc,
+  getDocs,
 } from 'firebase/firestore';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ShoppingCart } from 'lucide-react';
+
+interface MenuItem {
+  id: string;
+  name: string;
+  price: number;
+  image?: string;
+  type: 'Makanan' | 'Minuman';
+}
 
 export default function OrderPage() {
-  const [menus, setMenus] = useState<any[]>([]);
+  const [menus, setMenus] = useState<MenuItem[]>([]);
+  const [step, setStep] = useState<'tipe' | 'menu'>('tipe');
+  const [orderType, setOrderType] = useState<'dinein' | 'takeaway' | null>(null);
+  const [tab, setTab] = useState<'Makanan' | 'Minuman'>('Makanan');
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [customerName, setCustomerName] = useState('');
-  const [selectedMenuIds, setSelectedMenuIds] = useState<string[]>([]);
   const [orderNumber, setOrderNumber] = useState('');
+  const [showCart, setShowCart] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const router = useRouter();
 
@@ -23,176 +37,264 @@ export default function OrderPage() {
   }, []);
 
   const fetchMenus = async () => {
-    const menuSnapshot = await getDocs(collection(db, 'menus'));
-    const menuList = menuSnapshot.docs.map((doc) => ({
+    const snapshot = await getDocs(collection(db, 'menus'));
+    const data = snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
-    }));
-    setMenus(menuList);
+    })) as MenuItem[];
+    setMenus(data);
   };
 
   const generateOrderNumber = async () => {
-    const ordersSnapshot = await getDocs(collection(db, 'orders'));
-    const orderCount = ordersSnapshot.size;
-    const newOrderNumber = `ORD${(orderCount + 1).toString().padStart(3, '0')}`;
-    setOrderNumber(newOrderNumber);
+    const snapshot = await getDocs(collection(db, 'orders'));
+    setOrderNumber(`ORD${(snapshot.size + 1).toString().padStart(3, '0')}`);
   };
 
-  const handleMenuChange = (id: string) => {
-    setSelectedMenuIds((prev) =>
-      prev.includes(id) ? prev.filter((mid) => mid !== id) : [...prev, id]
+  const handleMenuToggle = (id: string) => {
+    setSelectedIds(prev =>
+      prev.includes(id) ? prev.filter(mid => mid !== id) : [...prev, id]
     );
   };
 
-  const totalPrice = selectedMenuIds.reduce((acc, id) => {
-    const menu = menus.find((m) => m.id === id);
-    return acc + (menu?.price || 0);
-  }, 0);
+  const selectedMenus = menus.filter(m => selectedIds.includes(m.id));
+  const total = selectedMenus.reduce((sum, item) => sum + item.price, 0);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!customerName || selectedMenuIds.length === 0) return;
-
-    const selectedMenus = menus
-      .filter((menu) => selectedMenuIds.includes(menu.id))
-      .map((menu) => ({
-        id: menu.id,
-        name: menu.name,
-        price: menu.price,
-        image: menu.image || null,
-      }));
+  const handleSubmit = async () => {
+    if (!customerName || selectedMenus.length === 0) return;
 
     await addDoc(collection(db, 'orders'), {
       orderNumber,
+      orderType,
       customerName,
       menus: selectedMenus,
-      total: totalPrice,
+      total,
       timestamp: new Date(),
     });
 
-    // Reset form dan tampilkan popup
     setCustomerName('');
-    setSelectedMenuIds([]);
+    setSelectedIds([]);
     setShowPopup(true);
-    generateOrderNumber(); // untuk pesanan berikutnya
-  };
-
-  const handlePesanLagi = () => {
-    setShowPopup(false); // hanya tutup popup, tetap di halaman
-  };
-
-  const handleSelesai = () => {
-    router.push('/'); // redirect ke halaman home
+    generateOrderNumber();
   };
 
   return (
     <div
-      className="min-h-screen bg-cover bg-center py-10 px-6 flex items-center justify-center"
+      className="min-h-screen bg-cover bg-center flex flex-col items-center justify-center px-4 py-10"
       style={{
-        backgroundImage:
-          "linear-gradient(rgba(103, 94, 35, 0.8), rgba(0, 0, 0, 0.8)), url('/kopi.jpg')",
+        backgroundImage: "linear-gradient(rgba(103,94,35,0.8), rgba(0,0,0,0.8)), url('/kopi.jpg')",
       }}
     >
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-10 rounded shadow-md max-w-xl w-full text-black"
-      >
-        <h1 className="text-4xl font-bold text-center mb-8">Buat Pesanan</h1>
-
-        <div className="mb-4">
-          <label className="font-semibold block mb-1">Nomor Pesanan</label>
-          <input
-            type="text"
-            value={orderNumber}
-            disabled
-            className="border rounded w-full px-3 py-2 bg-gray-100 text-gray-700 cursor-not-allowed"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="font-semibold block mb-1">Nama Pemesan</label>
-          <input
-            type="text"
-            value={customerName}
-            onChange={(e) => setCustomerName(e.target.value)}
-            className="border rounded w-full px-3 py-2"
-            placeholder="Contoh: Budi"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="font-semibold block mb-2">Pilih Menu</label>
-          {menus.map((menu) => (
-            <div key={menu.id} className="flex items-center mb-4">
-              <input
-                type="checkbox"
-                id={`menu-${menu.id}`}
-                checked={selectedMenuIds.includes(menu.id)}
-                onChange={() => handleMenuChange(menu.id)}
-                className="mr-2"
-              />
-              <label htmlFor={`menu-${menu.id}`} className="flex items-center gap-3">
-                {menu.image && (
-                  <img
-                    src={menu.image}
-                    alt={menu.name}
-                    className="w-12 h-12 object-cover rounded"
-                  />
-                )}
-                <span>
-                  {menu.name} - Rp {menu.price.toLocaleString()}
-                </span>
-              </label>
-            </div>
-          ))}
-        </div>
-
-        <div className="mb-4 font-semibold">
-          Total Harga: Rp {totalPrice.toLocaleString()}
-        </div>
-
-        <button
-          type="submit"
-          className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded w-full"
+      {step === 'tipe' && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+          className="bg-gradient-to-br from-white/80 to-yellow-100/80 backdrop-blur-md p-6 rounded-xl shadow-xl w-full max-w-2xl mx-auto text-center text-black"
         >
-          Simpan Pesanan
-        </button>
-      </form>
+          <h1 className="text-2xl font-bold mb-6">Pilih Tipe Pesanan</h1>
+          <div className="flex flex-col gap-4">
+            <button
+              onClick={() => {
+                setOrderType('dinein');
+                setStep('menu');
+              }}
+              className="bg-yellow-500 hover:bg-yellow-600 text-white text-lg font-bold py-4 rounded shadow transition"
+            >
+              🍽️ Dine In
+            </button>
+            <button
+              onClick={() => {
+                setOrderType('takeaway');
+                setStep('menu');
+              }}
+              className="bg-green-600 hover:bg-green-700 text-white text-lg font-bold py-4 rounded shadow transition"
+            >
+              🥡 Take Away
+            </button>
+            <button
+              onClick={() => router.push('/')}
+              className="text-sm text-gray-500 hover:underline mt-4"
+            >
+              ⬅ Kembali
+            </button>
+          </div>
+        </motion.div>
+      )}
+
+      {step === 'menu' && (
+        <motion.div
+          initial={{ x: 50, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="bg-gradient-to-br from-white/80 to-yellow-100/80 backdrop-blur-md p-6 rounded-xl shadow-xl w-full max-w-6xl mx-auto grid md:grid-cols-3 gap-6 text-black relative"
+        >
+          <button
+            type="button"
+            onClick={() => setStep('tipe')}
+            className="absolute left-4 top-4 px-3 py-2 bg-gray-200 hover:bg-gray-300 text-sm text-gray-700 font-semibold rounded-md shadow"
+          >
+            ⬅ Kembali
+          </button>
+<br></br>
+          <h1 className="col-span-full text-2xl md:text-3xl font-extrabold text-center tracking-wide text-black drop-shadow mb-4">
+            🛒 ORDER LABAR
+          </h1>
+
+          <div className="col-span-full flex justify-center gap-4 flex-wrap mb-6">
+            <button
+              type="button"
+              onClick={() => setTab('Makanan')}
+              className={`px-4 py-2 rounded-full font-semibold transition text-sm md:text-base ${
+                tab === 'Makanan' ? 'bg-yellow-300 text-yellow-900 shadow' : 'bg-gray-200 text-gray-600'
+              }`}
+            >
+              🍽️ Makanan
+            </button>
+            <button
+              type="button"
+              onClick={() => setTab('Minuman')}
+              className={`px-4 py-2 rounded-full font-semibold transition text-sm md:text-base ${
+                tab === 'Minuman' ? 'bg-blue-300 text-blue-900 shadow' : 'bg-gray-200 text-gray-600'
+              }`}
+            >
+              🥤 Minuman
+            </button>
+          </div>
+
+          <div className="md:col-span-2">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={tab}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                {menus.filter(m => m.type === tab).map(menu => (
+                  <div key={menu.id} className="flex items-center mb-4">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.includes(menu.id)}
+                      onChange={() => handleMenuToggle(menu.id)}
+                      className="mr-2"
+                    />
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      {menu.image && (
+                        <img
+                          src={menu.image}
+                          alt={menu.name}
+                          className="w-12 h-12 object-cover rounded"
+                        />
+                      )}
+                      <span>{menu.name} - Rp {menu.price.toLocaleString()}</span>
+                    </label>
+                  </div>
+                ))}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Tombol Toggle Keranjang */}
+          <button
+            type="button"
+            onClick={() => setShowCart(!showCart)}
+            className="fixed bottom-6 right-6 bg-yellow-500 hover:bg-yellow-600 p-4 rounded-full shadow-xl z-40"
+            aria-label="Lihat Keranjang"
+          >
+            <ShoppingCart className="text-white w-6 h-6" />
+          </button>
+
+          {/* Panel Keranjang */}
+          <AnimatePresence>
+            {showCart && (
+              <motion.div
+                initial={{ y: 300, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 300, opacity: 0 }}
+                transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+                className="fixed bottom-0 right-0 w-full max-w-md bg-white text-black p-6 rounded-t-xl shadow-2xl z-50"
+              >
+                <div className="flex justify-between items-center mb-4">
+                  <h4 className="text-lg font-bold flex items-center gap-2">
+                    🛒 Keranjang
+                  </h4>
+                  <button
+                    onClick={() => setShowCart(false)}
+                    className="text-sm text-gray-500 hover:underline"
+                  >
+                    Tutup
+                  </button>
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-sm font-semibold mb-1">Nama Pemesan</label>
+                  <input
+                    type="text"
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                    className="w-full px-3 py-2 border rounded"
+                  />
+                </div>
+
+                <div className="text-sm mb-2">
+                  <span className="font-semibold">No. Pesanan:</span> {orderNumber}
+                </div>
+                <div className="text-sm mb-2 capitalize">
+                  <span className="font-semibold">Tipe:</span> {orderType}
+                </div>
+
+                <ul className="list-disc pl-4 mb-2 text-sm">
+                  {selectedMenus.map((menu) => (
+                    <li key={menu.id}>{menu.name} - Rp {menu.price.toLocaleString()}</li>
+                  ))}
+                </ul>
+
+                <div className="font-semibold text-sm mb-4">
+                  Total: Rp {total.toLocaleString()}
+                </div>
+
+                <button
+                  onClick={handleSubmit}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded text-sm font-semibold"
+                >
+                  Simpan Pesanan
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      )}
 
       {/* POPUP */}
       {showPopup && (
-  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-    
-    <div
-      className="bg-white p-6 rounded-lg shadow-lg text-center w-96 relative overflow-hidden"
-      style={{
-        backgroundImage: "linear-gradient(rgba(255,255,255,0.85), rgba(255,255,255,0.85)), url('/kopi.jpg')",
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
-    >
-      <h2 className="text-black text-xl font-bold mb-4">Pesanan Berhasil!</h2>
-      <p className="text-black mb-6">
-        Pesanan sudah berhasil dibuat. Silahkan ditunggu dan jangan lupa bayar yaa 😊
-      </p>
-      <div className="flex justify-center gap-4">
-        <button
-          onClick={handlePesanLagi}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-        >
-          Pesan Lagi
-        </button>
-        <button
-          onClick={handleSelesai}
-          className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded"
-        >
-          Sudah, Cukup
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div
+            className="bg-white p-6 rounded-lg shadow-lg text-center w-96 relative overflow-hidden"
+            style={{
+              backgroundImage: "linear-gradient(rgba(255,255,255,0.85), rgba(255,255,255,0.85)), url('/kopi.jpg')",
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
+          >
+            <h2 className="text-black text-xl font-bold mb-4">Pesanan Berhasil!</h2>
+            <p className="text-black mb-6">Pesanan berhasil dibuat. Silahkan ditunggu dan jangan lupa bayar yaa 😊</p>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={() => setShowPopup(false)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+              >
+                Pesan Lagi
+              </button>
+              <button
+                onClick={() => router.push('/')}
+                className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded"
+              >
+                Sudah, Cukup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

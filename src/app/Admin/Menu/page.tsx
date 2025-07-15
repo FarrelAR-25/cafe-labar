@@ -163,33 +163,42 @@ export default function MenuPage() {
         </div>
 
         <div className="mb-4">
-          <label className="block font-semibold mb-1" htmlFor="image">
-            Gambar Menu
-          </label>
-          <input
-            id="image"
-            type="file"
-            accept="image/*"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) {
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                  setImageBase64(reader.result as string);
-                };
-                reader.readAsDataURL(file);
-              }
-            }}
-            className="w-full"
-          />
-          {imageBase64 && (
-            <img
-              src={imageBase64}
-              alt="Preview"
-              className="mt-4 w-full h-40 object-cover rounded"
-            />
-          )}
-        </div>
+  <label className="block font-semibold mb-1" htmlFor="image">
+    Gambar Menu
+  </label>
+
+  <label
+    htmlFor="imageUpload"
+    className="inline-block bg-gray-600 hover:bg-yellow-700 text-white text-sm font-medium py-2 px-4 rounded cursor-pointer transition"
+  >
+    📷 Choose Photo
+  </label>
+
+  <input
+    id="imageUpload"
+    type="file"
+    accept="image/*"
+    onChange={(e) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setImageBase64(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+      }
+    }}
+    className="hidden"
+  />
+
+  {imageBase64 && (
+    <img
+      src={imageBase64}
+      alt="Preview"
+      className="mt-4 w-full h-40 object-cover rounded"
+    />
+  )}
+</div>
 
         <button
           type="submit"
