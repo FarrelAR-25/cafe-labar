@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore';
 
 interface MenuItem {
+  qty: number;
   id?: string;
   name: string;
   price: number;
@@ -205,12 +206,13 @@ export default function AdminOrdersPage() {
                   <p className="mb-1 font-medium">Pemesan: {order.customerName}</p>
                   <p className="mb-1 font-medium">Menu yang dipesan:</p>
                   <ul className="list-disc list-inside mb-2 max-h-36 overflow-auto">
-                    {(order.menus ?? []).map((menu, i) => (
-                      <li key={i}>
-                        {menu.name} - Rp {menu.price.toLocaleString()}
-                      </li>
-                    ))}
-                  </ul>
+  {(order.menus ?? []).map((menu, i) => (
+    <li key={i}>
+      {menu.name} (x{menu.qty ?? 1}) - Rp {(menu.price * (menu.qty ?? 1)).toLocaleString()}
+    </li>
+  ))}
+</ul>
+
                   <p className="font-semibold mb-4">
                     Total Harga: Rp {order.total.toLocaleString()}
                   </p>
