@@ -18,7 +18,7 @@ export default function AdminDashboard() {
       <div className="pt-32 px-6 md:px-20">
         <h1 className="text-3xl md:text-4xl font-bold text-white text-center mb-10">Admin Dashboard</h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {/* MENU */}
           <div
             onClick={() => router.push('/Admin/Menu')}
@@ -44,6 +44,24 @@ export default function AdminDashboard() {
           >
             <h2 className="text-xl font-semibold mb-2 group-hover:text-blue-600 transition-colors duration-300">📜 History</h2>
             <p className="group-hover:text-gray-700">Lihat riwayat transaksi dan absensi.</p>
+          </div>
+
+          {/* REPORT */}
+          <div
+            onClick={() => router.push('/Admin/report')}
+            className="cursor-pointer bg-white bg-opacity-90 text-black p-6 rounded-lg shadow-md hover:shadow-2xl hover:bg-opacity-100 hover:scale-[1.03] transform transition duration-300 ease-in-out group"
+          >
+            <h2 className="text-xl font-semibold mb-2 group-hover:text-purple-600 transition-colors duration-300">📋 Report</h2>
+            <p className="group-hover:text-gray-700">Lihat review dan saran dari pelanggan.</p>
+          </div>
+
+           {/* REPORT */}
+          <div
+            onClick={() => router.push('/Admin/income')}
+            className="cursor-pointer bg-white bg-opacity-90 text-black p-6 rounded-lg shadow-md hover:shadow-2xl hover:bg-opacity-100 hover:scale-[1.03] transform transition duration-300 ease-in-out group"
+          >
+            <h2 className="text-xl font-semibold mb-2 group-hover:text-purple-600 transition-colors duration-300">📋 Report Income</h2>
+            <p className="group-hover:text-gray-700">Catatan pemasukan harian.</p>
           </div>
         </div>
       </div>

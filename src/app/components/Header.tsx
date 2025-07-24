@@ -11,9 +11,10 @@ const navItems = [
   { href: '/Menu', label: 'Menu' },
   { href: '/About', label: 'About' },
   { href: '/Contact', label: 'Contact' },
+  { href: '/Report', label: 'Report' },
 ];
 
-const allowedPaths = ['/', '/Home', '/Menu', '/About', '/Contact'];
+const allowedPaths = ['/', '/Home', '/Menu', '/About', '/Contact', '/Report'];
 
 export default function Header() {
   const pathname = usePathname();
@@ -56,7 +57,7 @@ export default function Header() {
               Order Now
             </button>
           </Link>
-          <Link href="/Admin/dashboard">
+          <Link href="/Admin">
             <button className="flex items-center gap-2 bg-white text-[#7b4b2a] font-semibold text-sm px-4 py-2 rounded-md shadow-md hover:bg-yellow-300 transition-all">
               <FaUserShield />
               Admin

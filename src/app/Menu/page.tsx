@@ -82,7 +82,7 @@ export default function MenuPage() {
         className="flex-grow bg-black/50 backdrop-blur-md pt-24 pb-12 px-4 sm:px-8 md:px-16"
       >
         <h1 className="text-center text-white text-[clamp(1.8rem,5vw,3rem)] font-extrabold mb-6 drop-shadow-md">
-          ☕ Menu Kami
+          ☕ Menu Best Seller
         </h1>
 
         <div className="flex justify-center mb-8 gap-4">

@@ -24,7 +24,7 @@ export default function OrderPage() {
   const [step, setStep] = useState<'tipe' | 'menu'>('tipe');
   const [orderType, setOrderType] = useState<'dinein' | 'takeaway' | null>(null);
   const [tab, setTab] = useState<'Makanan' | 'Minuman'>('Makanan');
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [cart, setCart] = useState<Record<string, number>>({});
   const [customerName, setCustomerName] = useState('');
   const [orderNumber, setOrderNumber] = useState('');
   const [showCart, setShowCart] = useState(false);
@@ -50,40 +50,55 @@ export default function OrderPage() {
     setOrderNumber(`ORD${(snapshot.size + 1).toString().padStart(3, '0')}`);
   };
 
-  const handleMenuToggle = (id: string) => {
-    setSelectedIds(prev =>
-      prev.includes(id) ? prev.filter(mid => mid !== id) : [...prev, id]
-    );
+  const handleQuantityChange = (id: string, amount: number) => {
+    setCart(prev => {
+      const updated = { ...prev };
+      updated[id] = (updated[id] || 0) + amount;
+      if (updated[id] <= 0) delete updated[id];
+      return updated;
+    });
   };
 
-  const selectedMenus = menus.filter(m => selectedIds.includes(m.id));
-  const total = selectedMenus.reduce((sum, item) => sum + item.price, 0);
+  const selectedMenus = menus.filter(m => cart[m.id]);
+  const total = selectedMenus.reduce((sum, item) => sum + item.price * cart[item.id], 0);
 
   const handleSubmit = async () => {
     if (!customerName || selectedMenus.length === 0) return;
+
+    const orderItems = selectedMenus.map(item => ({ ...item, qty: cart[item.id] }));
 
     await addDoc(collection(db, 'orders'), {
       orderNumber,
       orderType,
       customerName,
-      menus: selectedMenus,
+      menus: orderItems,
       total,
       timestamp: new Date(),
     });
 
     setCustomerName('');
-    setSelectedIds([]);
+    setCart({});
     setShowPopup(true);
     generateOrderNumber();
   };
 
   return (
     <div
-      className="min-h-screen bg-cover bg-center flex flex-col items-center justify-center px-4 py-10"
+      className="min-h-screen bg-cover bg-center flex flex-col items-center justify-center px-4 py-10 relative"
       style={{
         backgroundImage: "linear-gradient(rgba(103,94,35,0.8), rgba(0,0,0,0.8)), url('/kopi.jpg')",
       }}
     >
+      {/* Cart Button Outside */}
+      <button
+        type="button"
+        onClick={() => setShowCart(!showCart)}
+        className="fixed top-4 right-4 bg-yellow-500 hover:bg-yellow-600 p-3 rounded-full shadow-xl z-50"
+        aria-label="Lihat Keranjang"
+      >
+        <ShoppingCart className="text-white w-5 h-5" />
+      </button>
+
       {step === 'tipe' && (
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
@@ -128,6 +143,7 @@ export default function OrderPage() {
           transition={{ duration: 0.3 }}
           className="bg-gradient-to-br from-white/80 to-yellow-100/80 backdrop-blur-md p-6 rounded-xl shadow-xl w-full max-w-6xl mx-auto grid md:grid-cols-3 gap-6 text-black relative"
         >
+          <br></br>
           <button
             type="button"
             onClick={() => setStep('tipe')}
@@ -135,7 +151,6 @@ export default function OrderPage() {
           >
             ⬅ Kembali
           </button>
-<br></br>
           <h1 className="col-span-full text-2xl md:text-3xl font-extrabold text-center tracking-wide text-black drop-shadow mb-4">
             🛒 ORDER LABAR
           </h1>
@@ -171,13 +186,7 @@ export default function OrderPage() {
                 transition={{ duration: 0.3 }}
               >
                 {menus.filter(m => m.type === tab).map(menu => (
-                  <div key={menu.id} className="flex items-center mb-4">
-                    <input
-                      type="checkbox"
-                      checked={selectedIds.includes(menu.id)}
-                      onChange={() => handleMenuToggle(menu.id)}
-                      className="mr-2"
-                    />
+                  <div key={menu.id} className="flex items-center justify-between mb-4">
                     <label className="flex items-center gap-3 cursor-pointer">
                       {menu.image && (
                         <img
@@ -188,21 +197,16 @@ export default function OrderPage() {
                       )}
                       <span>{menu.name} - Rp {menu.price.toLocaleString()}</span>
                     </label>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => handleQuantityChange(menu.id, -1)} className="px-2 py-1 bg-gray-200 rounded">-</button>
+                      <span>{cart[menu.id] || 0}</span>
+                      <button onClick={() => handleQuantityChange(menu.id, 1)} className="px-2 py-1 bg-gray-200 rounded">+</button>
+                    </div>
                   </div>
                 ))}
               </motion.div>
             </AnimatePresence>
           </div>
-
-          {/* Tombol Toggle Keranjang */}
-          <button
-            type="button"
-            onClick={() => setShowCart(!showCart)}
-            className="fixed bottom-6 right-6 bg-yellow-500 hover:bg-yellow-600 p-4 rounded-full shadow-xl z-40"
-            aria-label="Lihat Keranjang"
-          >
-            <ShoppingCart className="text-white w-6 h-6" />
-          </button>
 
           {/* Panel Keranjang */}
           <AnimatePresence>
@@ -245,7 +249,7 @@ export default function OrderPage() {
 
                 <ul className="list-disc pl-4 mb-2 text-sm">
                   {selectedMenus.map((menu) => (
-                    <li key={menu.id}>{menu.name} - Rp {menu.price.toLocaleString()}</li>
+                    <li key={menu.id}>{menu.name} x {cart[menu.id]} - Rp {(menu.price * cart[menu.id]).toLocaleString()}</li>
                   ))}
                 </ul>
 
