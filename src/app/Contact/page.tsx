@@ -36,10 +36,10 @@ export default function ContactPage() {
             {/* Kontak Info */}
             <div className="md:w-1/2">
               <h2 className="text-2xl font-semibold mb-4">Hubungi Kami</h2>
-              <p className="mb-2">📍 Jl. Kopi No.123, Depok, Indonesia</p>
+              <p className="mb-2">📍 Jl. Ibnu Armah 3 No.1, RT.004/RW.003. Kel, Pangkalan Jati Baru, Kec. Cinere, Kota Depok, Jawa Barat</p>
               <p className="mb-2">📞 +62 812 3456 7890</p>
               <p className="mb-2">📧 labarcoffee@example.com</p>
-              <p className="mb-2">⏰ 08.00 – 22.00 WIB</p>
+              <p className="mb-2">⏰ 06:00 – 23:00 WIB</p>
             </div>
 
             {/* Google Map */}
@@ -78,17 +78,17 @@ export default function ContactPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               {
-                name: 'Azmi, Mahasiswa',
+                name: 'Azmi',
                 quote:
                   'Tempatnya cozy banget, cocok buat kerja atau santai bareng teman. Mie gobarnya juga juara!',
               },
               {
-                name: 'Farrel, Algojo',
+                name: 'Farrel',
                 quote:
                   'Suka banget sama Peach Tea-nya, seger dan pas manisnya. Recommended buat nongkrong sore.',
               },
               {
-                name: 'NoName, PKI',
+                name: 'NoName',
                 quote:
                   'Kopi di Labar beda dari yang lain, creamy tapi tetap strong. Pelayanannya juga ramah banget.',
               },

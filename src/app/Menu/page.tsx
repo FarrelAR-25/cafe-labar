@@ -21,7 +21,7 @@ const menuItems = [
     type: 'Minuman',
   },
   {
-    name: 'Coppacino',
+    name: 'Kopi Susu Labar',
     description: 'Kopi susu dengan rasa creamy yang pas.',
     price: '15.000',
     image: '/menu/copacino.jpeg',
@@ -43,7 +43,7 @@ const menuItems = [
   },
   {
     name: 'Mie Gobar',
-    description: 'Mie goreng pedas khas Labar.',
+    description: 'Mie goreng khas Labar.',
     price: '7.000',
     image: '/menu/goreng.jpeg',
     type: 'Makanan',

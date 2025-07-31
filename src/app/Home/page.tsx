@@ -62,7 +62,7 @@ export default function Home() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-white text-[clamp(1.5rem,4vw,3rem)] font-extrabold leading-tight tracking-wide"
           >
-            Welcome & Enjoy<br />
+            WELCOME TO<br />
             <span className="text-yellow-300">L A B A R</span>
           </motion.h1>
 
@@ -72,7 +72,7 @@ export default function Home() {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="text-white mt-4 text-sm sm:text-base max-w-xl"
           >
-            jadi inituh site pemesanan ya temen temen labar. just enjoy and taste our coffee
+            Please Enjoy & Taste Our Coffee
           </motion.p>
 
           <motion.ul

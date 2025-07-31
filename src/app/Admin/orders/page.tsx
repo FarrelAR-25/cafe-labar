@@ -226,9 +226,9 @@ export default function AdminOrdersPage() {
                     </button>
                     <button
                       onClick={() => clearOrder(order)}
-                      className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+                      className="bg-green-600 hover:bg-red-700 text-white px-4 py-2 rounded"
                     >
-                      Clear
+                      Pesanan Selesai
                     </button>
                     <button
                       onClick={() => deleteOrder(order.id)}

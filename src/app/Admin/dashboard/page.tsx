@@ -25,7 +25,7 @@ export default function AdminDashboard() {
             className="cursor-pointer bg-white bg-opacity-90 text-black p-6 rounded-lg shadow-md hover:shadow-2xl hover:bg-opacity-100 hover:scale-[1.03] transform transition duration-300 ease-in-out group"
           >
             <h2 className="text-xl font-semibold mb-2 group-hover:text-orange-600 transition-colors duration-300">🍽️ Menu</h2>
-            <p className="group-hover:text-gray-700">Lihat dan kelola daftar menu.</p>
+            <p className="group-hover:text-gray-700">Lihat Kan Kelola Daftar Menu.</p>
           </div>
 
           {/* ORDER */}
@@ -34,7 +34,7 @@ export default function AdminDashboard() {
             className="cursor-pointer bg-white bg-opacity-90 text-black p-6 rounded-lg shadow-md hover:shadow-2xl hover:bg-opacity-100 hover:scale-[1.03] transform transition duration-300 ease-in-out group"
           >
             <h2 className="text-xl font-semibold mb-2 group-hover:text-green-600 transition-colors duration-300">🧾 Order</h2>
-            <p className="group-hover:text-gray-700">Lihat pesanan pelanggan secara real-time.</p>
+            <p className="group-hover:text-gray-700">Lihat Pesanan Pelanggan Secara Real-time.</p>
           </div>
 
           {/* HISTORY */}
@@ -43,7 +43,7 @@ export default function AdminDashboard() {
             className="cursor-pointer bg-white bg-opacity-90 text-black p-6 rounded-lg shadow-md hover:shadow-2xl hover:bg-opacity-100 hover:scale-[1.03] transform transition duration-300 ease-in-out group"
           >
             <h2 className="text-xl font-semibold mb-2 group-hover:text-blue-600 transition-colors duration-300">📜 History</h2>
-            <p className="group-hover:text-gray-700">Lihat riwayat transaksi dan absensi.</p>
+            <p className="group-hover:text-gray-700">Lihat Riwayat Transaksi.</p>
           </div>
 
           {/* REPORT */}
@@ -52,7 +52,7 @@ export default function AdminDashboard() {
             className="cursor-pointer bg-white bg-opacity-90 text-black p-6 rounded-lg shadow-md hover:shadow-2xl hover:bg-opacity-100 hover:scale-[1.03] transform transition duration-300 ease-in-out group"
           >
             <h2 className="text-xl font-semibold mb-2 group-hover:text-purple-600 transition-colors duration-300">📋 Report</h2>
-            <p className="group-hover:text-gray-700">Lihat review dan saran dari pelanggan.</p>
+            <p className="group-hover:text-gray-700">Lihat Review Dan Saran Dari Pelanggan.</p>
           </div>
 
            {/* REPORT */}
@@ -61,7 +61,7 @@ export default function AdminDashboard() {
             className="cursor-pointer bg-white bg-opacity-90 text-black p-6 rounded-lg shadow-md hover:shadow-2xl hover:bg-opacity-100 hover:scale-[1.03] transform transition duration-300 ease-in-out group"
           >
             <h2 className="text-xl font-semibold mb-2 group-hover:text-purple-600 transition-colors duration-300">📋 Report Income</h2>
-            <p className="group-hover:text-gray-700">Catatan pemasukan harian.</p>
+            <p className="group-hover:text-gray-700">Catatan Pemasukan.</p>
           </div>
         </div>
       </div>
